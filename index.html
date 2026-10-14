@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Job Card &amp; Service Warranty</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-inner">
+      <img class="logo" id="letterheadLogo" src="assets/logo-purepest.png" alt="Pure Pest Solutions" />
+      <div class="title-block">
+        <h1>JOB CARD &amp; SERVICE WARRANTY</h1>
+        <p class="sub">Registered Pest Control Operator</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="card">
+      <div class="card-bar"><span class="num">1</span>JOB DETAILS</div>
+      <div class="card-body">
+        <div class="row2">
+          <div class="field">
+            <label for="jobNo">Job No.</label>
+            <input type="text" id="jobNo" placeholder="e.g. 1042" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="jobDate">Date</label>
+            <input type="date" id="jobDate">
+          </div>
+        </div>
+        <div class="field">
+          <label for="technician">Technician Name</label>
+          <input type="text" id="technician" placeholder="Full name">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bar"><span class="num">2</span>CLIENT DETAILS</div>
+      <div class="card-body">
+        <div class="field">
+          <label for="clientName">Client Name</label>
+          <input type="text" id="clientName" placeholder="Client / company name">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="contactNumber">Contact Number</label>
+            <input type="tel" id="contactNumber" placeholder="e.g. 082 123 4567" inputmode="tel">
+          </div>
+          <div class="field">
+            <label for="vatNo">VAT No. <span class="hint" style="display:inline;font-weight:400;">(optional)</span></label>
+            <input type="text" id="vatNo" placeholder="Optional">
+          </div>
+        </div>
+        <div class="field">
+          <label for="address">Site Address</label>
+          <textarea id="address" placeholder="Physical address of the job"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bar"><span class="num">3</span>WORK PERFORMED</div>
+      <div class="card-body">
+        <div class="field">
+          <label for="areaTreated">Area / Pest Treated</label>
+          <input type="text" id="areaTreated" placeholder="e.g. Kitchen, roof void - Cockroaches">
+        </div>
+        <div class="field">
+          <label for="workDescription">Description of Work Done</label>
+          <textarea id="workDescription" rows="4" placeholder="Describe the treatment, products used, findings and recommendations"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bar"><span class="num">4</span>PHOTOS</div>
+      <div class="card-body">
+        <div class="photo-grid">
+          <div class="photo-slot">
+            <span class="slot-label">Before</span>
+            <div class="photo-box" data-slot="before" onclick="triggerPhoto('before')">
+              <div class="placeholder" id="ph-before-placeholder">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.3"/></svg>
+                Tap to add photo
+              </div>
+              <img id="img-before" style="display:none;">
+              <button type="button" class="remove-x" id="rm-before" style="display:none;" onclick="event.stopPropagation();removePhoto('before')">&times;</button>
+            </div>
+            <input type="file" id="file-before" accept="image/*" capture="environment">
+          </div>
+          <div class="photo-slot">
+            <span class="slot-label">After</span>
+            <div class="photo-box" data-slot="after" onclick="triggerPhoto('after')">
+              <div class="placeholder" id="ph-after-placeholder">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.3"/></svg>
+                Tap to add photo
+              </div>
+              <img id="img-after" style="display:none;">
+              <button type="button" class="remove-x" id="rm-after" style="display:none;" onclick="event.stopPropagation();removePhoto('after')">&times;</button>
+            </div>
+            <input type="file" id="file-after" accept="image/*" capture="environment">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Additional Photos <span class="hint" style="display:inline;font-weight:400;">(optional, max 8)</span></label>
+          <div class="extra-photos" id="extraPhotosGrid">
+            <button type="button" class="add-extra-btn" onclick="triggerExtraPhoto()">+</button>
+          </div>
+          <input type="file" id="file-extra" accept="image/*" capture="environment">
+          <div class="status-msg" id="photoStatusMsg" style="text-align:left;margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bar"><span class="num">5</span>WARRANTY DETAILS</div>
+      <div class="card-body">
+        <div class="field">
+          <label for="warrantyNo">Warranty No.</label>
+          <input type="text" id="warrantyNo" placeholder="e.g. W-1042">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="warrantyStart">Warranty Start Date</label>
+            <input type="date" id="warrantyStart">
+          </div>
+          <div class="field">
+            <label for="warrantyEnd">Warranty End Date</label>
+            <input type="date" id="warrantyEnd">
+          </div>
+        </div>
+        <div class="field">
+          <label>Warranty Covers</label>
+          <div class="cover-grid">
+            <div class="cover-item"><input type="checkbox" id="cover_general"><label for="cover_general">General Pest Control</label></div>
+            <div class="cover-item"><input type="checkbox" id="cover_termites"><label for="cover_termites">Termites / WDI</label></div>
+            <div class="cover-item"><input type="checkbox" id="cover_rodents"><label for="cover_rodents">Rodents</label></div>
+            <div class="cover-item"><input type="checkbox" id="cover_fumigation"><label for="cover_fumigation">Fumigation</label></div>
+            <div class="cover-item"><input type="checkbox" id="cover_other"><label for="cover_other">Other</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Active Ingredients <span class="hint" style="display:inline;font-weight:400;">(registered products used)</span></label>
+          <div class="ai-grid cover-grid">
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_charlie_bait_box"><label for="ai_charlie_bait_box">Charlie Bait Box</label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_roach_dust"><label for="ai_roach_dust">Roach Dust <span class="ai-detail">&mdash; Permethrin(Pyrethroid) 5g/kg</span> <span class="ai-reg">Reg. L4587</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_maxthor_turbo"><label for="ai_maxthor_turbo">Maxthor Turbo <span class="ai-detail">&mdash; Bifenthrin 100g/L; Imiprothrin 10g/l; Pyperonel Butoxide</span> <span class="ai-reg">Reg. L10023</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_sharda_roach_gel_bait"><label for="ai_sharda_roach_gel_bait">Sharda Roach Gel Bait <span class="ai-detail">&mdash; Imidacloprid 21,5g/kg</span> <span class="ai-reg">Reg. L10674</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_ctx_108"><label for="ai_ctx_108">CTX 108 <span class="ai-detail">&mdash; Cypermethrin 10,0 g/ℓ TCMTB (Organosulphur compound) 8,0 g /ℓ</span> <span class="ai-reg">Reg. L7445</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_dominion"><label for="ai_dominion">Dominion <span class="ai-detail">&mdash; Imidachloprid (chloronicotinyl) 350 g/ℓ</span> <span class="ai-reg">Reg. L9576</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_bombex"><label for="ai_bombex">Bombex <span class="ai-detail">&mdash; Lambda-Sihalotrin 100g/l</span> <span class="ai-reg">Reg. L9435</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_nuvan"><label for="ai_nuvan">NuVan Aerosol <span class="ai-detail">&mdash; Dichlorvos (organophosphate) 124 g/kg, Aerosol Gas</span> <span class="ai-reg">Reg. L7410</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_prothor"><label for="ai_prothor">Prothor <span class="ai-detail">&mdash; Imidacloprid 200g/L</span> <span class="ai-reg">Reg. L8794</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_ultrakill_rat_mouse_wax_blocks"><label for="ai_ultrakill_rat_mouse_wax_blocks">Ultrakill Rat &amp; Mouse Wax Blocks <span class="ai-detail">&mdash; Flocoumafen 0.05 g/kg</span> <span class="ai-reg">Reg. L9739</span></label></div>
+            <div class="cover-item ai-item"><input type="checkbox" id="ai_permadust"><label for="ai_permadust">Permadust <span class="ai-detail">&mdash; Permethrin (Pyrethroid) 5g/kg &amp; Piperonyl Butoxide (Synergist) 40g/kg</span> <span class="ai-reg">Reg. L7999 (Act 36 of 1947)</span></label></div>
+          </div>
+          <div class="field" style="margin-top:10px;margin-bottom:0;">
+            <label for="activeIngredientOther" style="font-weight:600;font-size:11px;">Other <span class="hint" style="display:inline;font-weight:400;">(not listed above)</span></label>
+            <input type="text" id="activeIngredientOther" placeholder="e.g. Deltamethrin">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label for="warrantyComments">Comments / Recommendations</label>
+          <textarea id="warrantyComments" rows="3" placeholder="Any additional comments or recommendations for the client"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bar"><span class="num">6</span>WARRANTY TERMS &amp; CONDITIONS</div>
+      <div class="card-body">
+        <div class="terms-box">
+          <ul id="termsList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bar"><span class="num">7</span>CLIENT SIGN-OFF</div>
+      <div class="card-body">
+        <div class="checkbox-row">
+          <input type="checkbox" id="confirmCheck">
+          <label for="confirmCheck">I confirm the work above was carried out to my satisfaction on the date shown, and I accept the Warranty Terms &amp; Conditions above.</label>
+        </div>
+        <div class="field">
+          <label for="signatoryName">Signatory Name</label>
+          <input type="text" id="signatoryName" placeholder="Name of person signing">
+        </div>
+        <div class="field">
+          <label>Client Signature</label>
+          <div class="sig-pad-wrap" id="sigWrap">
+            <canvas id="sigCanvas"></canvas>
+            <div class="sig-line-hint"></div>
+            <div class="sig-placeholder" id="sigPlaceholder">Sign here with your finger</div>
+          </div>
+          <div class="sig-row">
+            <span class="hint" id="sigTimestamp"></span>
+            <button type="button" class="btn btn-danger-outline" onclick="clearSignature()">Clear Signature</button>
+          </div>
+        </div>
+        <div class="pco-block">
+          <img id="pcoSig" src="assets/pco-signature.png" alt="PCO Signature">
+          <div class="pco-text"><b>PCO No.</b> P41732</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-actions">
+      <button type="button" class="btn btn-primary" id="generateBtn" onclick="generatePdf()">Generate &amp; Download PDF</button>
+      <div class="status-msg" id="statusMsg"></div>
+      <button type="button" class="reset-link" onclick="resetForm()">Start a new blank Job Card</button>
+    </div>
+
+    <div class="footer-note">
+      <img id="govLogo" src="assets/logo-dept-agriculture.png" alt="Dept. of Agriculture, Forestry and Fisheries">
+      <p>PurePest Solutions</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Supabase: config.js holds your project URL/key (gitignored — copy from
+     config.example.js); supabase-client.js wraps the submit logic. Loading
+     order matters: supabase-js, then config, then our wrapper, then app.js
+     (which calls window.JobCardBackend). -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/supabase-client.js"></script>
+
+<script src="js/app.js"></script>
+</body>
+</html>
