@@ -8,8 +8,6 @@
 </head>
 <body>
 
-
-
 <div class="wrap">
   <div class="header">
     <div class="header-inner">
@@ -22,6 +20,10 @@
   </div>
 
   <div class="content">
+    <div class="draft-banner" id="draftBanner" style="display:none;align-items:center;justify-content:space-between;gap:10px;background:#FFF6DC;border:1px solid #E8D48A;border-radius:7px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;color:#6B5900;">
+      <span>We restored your in-progress job card after the page reloaded — nothing was lost.</span>
+      <button type="button" onclick="dismissDraftBanner()" style="background:none;border:none;color:#6B5900;font-weight:700;font-size:12.5px;text-decoration:underline;flex-shrink:0;padding:0;">Dismiss</button>
+    </div>
 
     <div class="card">
       <div class="card-bar"><span class="num">1</span>JOB DETAILS</div>
@@ -90,24 +92,24 @@
             <div class="photo-box" data-slot="before" onclick="triggerPhoto('before')">
               <div class="placeholder" id="ph-before-placeholder">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.3"/></svg>
-                Tap to add photo
+                Tap for camera or gallery
               </div>
               <img id="img-before" style="display:none;">
               <button type="button" class="remove-x" id="rm-before" style="display:none;" onclick="event.stopPropagation();removePhoto('before')">&times;</button>
             </div>
-            <input type="file" id="file-before" accept="image/*" capture="environment">
+            <input type="file" id="file-before" accept="image/*">
           </div>
           <div class="photo-slot">
             <span class="slot-label">After</span>
             <div class="photo-box" data-slot="after" onclick="triggerPhoto('after')">
               <div class="placeholder" id="ph-after-placeholder">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.3"/></svg>
-                Tap to add photo
+                Tap for camera or gallery
               </div>
               <img id="img-after" style="display:none;">
               <button type="button" class="remove-x" id="rm-after" style="display:none;" onclick="event.stopPropagation();removePhoto('after')">&times;</button>
             </div>
-            <input type="file" id="file-after" accept="image/*" capture="environment">
+            <input type="file" id="file-after" accept="image/*">
           </div>
         </div>
         <div class="field" style="margin-bottom:0;">
@@ -115,7 +117,7 @@
           <div class="extra-photos" id="extraPhotosGrid">
             <button type="button" class="add-extra-btn" onclick="triggerExtraPhoto()">+</button>
           </div>
-          <input type="file" id="file-extra" accept="image/*" capture="environment">
+          <input type="file" id="file-extra" accept="image/*">
           <div class="status-msg" id="photoStatusMsg" style="text-align:left;margin-top:8px;"></div>
         </div>
       </div>
@@ -228,17 +230,11 @@
   </div>
 </div>
 
-<!-- PDF generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- Supabase: config.js holds your project URL/key (gitignored — copy from
-     config.example.js); supabase-client.js wraps the submit logic. Loading
-     order matters: supabase-js, then config, then our wrapper, then app.js
-     (which calls window.JobCardBackend). -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/supabase-client.js"></script>
-
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -226,6 +226,7 @@ window.addEventListener('unhandledrejection', function(ev){
     document.getElementById('ph-'+slot+'-placeholder').style.display = 'block';
     document.getElementById('rm-'+slot).style.display = 'none';
     document.getElementById('file-'+slot).value = '';
+    scheduleSaveDraft();
   };
   ['before','after'].forEach(function(slot){
     document.getElementById('file-'+slot).addEventListener('change', function(ev){
@@ -243,6 +244,7 @@ window.addEventListener('unhandledrejection', function(ev){
         imgEl.style.display = 'block';
         document.getElementById('ph-'+slot+'-placeholder').style.display = 'none';
         document.getElementById('rm-'+slot).style.display = 'flex';
+        scheduleSaveDraft();
       }, function(errMsg){
         photoBusy = false;
         photoStatus(errMsg, 'error');
@@ -275,6 +277,7 @@ window.addEventListener('unhandledrejection', function(ev){
       photoStatus('');
       extraPhotos.push(dataUrl);
       renderExtraPhotos();
+      scheduleSaveDraft();
     }, function(errMsg){
       photoBusy = false;
       photoStatus(errMsg, 'error');
@@ -300,6 +303,7 @@ window.addEventListener('unhandledrejection', function(ev){
   window.removeExtraPhoto = function(idx){
     extraPhotos.splice(idx,1);
     renderExtraPhotos();
+    scheduleSaveDraft();
   };
 
   // ---------- Signature pad ----------
@@ -357,6 +361,7 @@ window.addEventListener('unhandledrejection', function(ev){
     if(!drawing) return;
     drawing = false;
     document.getElementById('sigTimestamp').textContent = 'Signed ' + new Date().toLocaleString();
+    scheduleSaveDraft();
   }
   canvas.addEventListener('mousedown', startDraw);
   canvas.addEventListener('mousemove', moveDraw);
@@ -371,7 +376,112 @@ window.addEventListener('unhandledrejection', function(ev){
     hasSignature = false;
     sigPlaceholder.style.display = 'flex';
     document.getElementById('sigTimestamp').textContent = '';
+    scheduleSaveDraft();
   };
+
+
+  // ---------- Autosave / crash-recovery draft ----------
+  // Mobile browsers can reload this page out from under the user — most
+  // often right after the native camera app takes over full-screen and the
+  // OS reclaims the backgrounded tab's memory. When that happens all form
+  // state used to be lost and the technician had to start the whole job
+  // card over. This autosaves a draft to this device's local storage as
+  // they work, and restores it the moment the page comes back.
+  var DRAFT_KEY = 'purepest_jobcard_draft_v1';
+  var DRAFT_FIELD_IDS = ['jobNo','jobDate','technician','clientName','contactNumber','vatNo','address',
+    'areaTreated','workDescription','warrantyNo','warrantyStart','warrantyEnd','activeIngredientOther',
+    'warrantyComments','signatoryName','confirmCheck'].concat(
+      WARRANTY_COVER_OPTIONS.map(function(o){ return o.id; }),
+      ACTIVE_INGREDIENT_OPTIONS.map(function(o){ return o.id; })
+    );
+  var saveDraftTimer = null;
+  function scheduleSaveDraft(){
+    if(saveDraftTimer) clearTimeout(saveDraftTimer);
+    saveDraftTimer = setTimeout(saveDraftNow, 400);
+  }
+  function saveDraftNow(){
+    try {
+      var data = {
+        fields: {},
+        photos: photos,
+        extraPhotos: extraPhotos,
+        signatureDataUrl: hasSignature ? canvas.toDataURL('image/png') : null,
+        sigTimestamp: document.getElementById('sigTimestamp').textContent,
+        savedAt: Date.now()
+      };
+      DRAFT_FIELD_IDS.forEach(function(id){
+        var el = document.getElementById(id);
+        if(!el) return;
+        data.fields[id] = (el.type === 'checkbox') ? el.checked : el.value;
+      });
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+    } catch(e){
+      // Storage full, disabled (private browsing) or unavailable — autosave
+      // is best-effort only; the form still works normally without it.
+    }
+  }
+  function clearDraft(){
+    try { localStorage.removeItem(DRAFT_KEY); } catch(e){}
+  }
+  function restoreDraft(){
+    var raw;
+    try { raw = localStorage.getItem(DRAFT_KEY); } catch(e){ return; }
+    if(!raw) return;
+    var data;
+    try { data = JSON.parse(raw); } catch(e){ return; }
+    if(!data) return;
+    try {
+      if(data.fields){
+        Object.keys(data.fields).forEach(function(id){
+          var el = document.getElementById(id);
+          if(!el) return;
+          if(el.type === 'checkbox'){ el.checked = !!data.fields[id]; }
+          else { el.value = data.fields[id]; }
+        });
+        warrantyNoAuto = !!(jobNoField.value && warrantyNoField.value && jobNoField.value === warrantyNoField.value);
+        warrantyEndAuto = false;
+      }
+      if(data.photos){
+        ['before','after'].forEach(function(slot){
+          var src = data.photos[slot];
+          if(src){
+            photos[slot] = src;
+            var imgEl = document.getElementById('img-'+slot);
+            imgEl.src = src;
+            imgEl.style.display = 'block';
+            document.getElementById('ph-'+slot+'-placeholder').style.display = 'none';
+            document.getElementById('rm-'+slot).style.display = 'flex';
+          }
+        });
+      }
+      if(data.extraPhotos && data.extraPhotos.length){
+        extraPhotos = data.extraPhotos.slice(0, MAX_EXTRA_PHOTOS);
+        renderExtraPhotos();
+      }
+      if(data.signatureDataUrl){
+        var img = new Image();
+        img.onload = function(){
+          var rect = canvas.getBoundingClientRect();
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+          hasSignature = true;
+          sigPlaceholder.style.display = 'none';
+          if(data.sigTimestamp){ document.getElementById('sigTimestamp').textContent = data.sigTimestamp; }
+        };
+        img.src = data.signatureDataUrl;
+      }
+      var banner = document.getElementById('draftBanner');
+      if(banner){ banner.style.display = 'flex'; }
+    } catch(e){
+      console.error('Could not restore saved draft:', e);
+    }
+  }
+  window.dismissDraftBanner = function(){
+    var banner = document.getElementById('draftBanner');
+    if(banner){ banner.style.display = 'none'; }
+  };
+  document.addEventListener('input', scheduleSaveDraft);
+  document.addEventListener('change', scheduleSaveDraft);
+  restoreDraft();
 
   // ---------- Reset ----------
   window.resetForm = function(){
@@ -393,6 +503,8 @@ window.addEventListener('unhandledrejection', function(ev){
     clearSignature();
     document.getElementById('statusMsg').textContent = '';
     document.getElementById('statusMsg').className = 'status-msg';
+    clearDraft();
+    dismissDraftBanner();
     window.scrollTo({top:0, behavior:'smooth'});
   };
 
@@ -455,6 +567,7 @@ window.addEventListener('unhandledrejection', function(ev){
         try {
           await downloads.save({ filename: filename, data: pdfBlob });
           setStatus('PDF saved.', 'ok');
+          clearDraft();
         } catch(err){
           if(err && err.code === 'declined'){
             setStatus('Save cancelled.', '');
@@ -475,15 +588,17 @@ window.addEventListener('unhandledrejection', function(ev){
           document.body.removeChild(a);
           setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 30000);
           setStatus('PDF saved.', 'ok');
+          clearDraft();
         } catch(err2){
           setStatus('Could not save the file. Please try again.', 'error');
         }
       }
+
       // Also save this submission to Supabase (database row + uploaded
       // photos/PDF), if js/config.js has been filled in with real project
       // credentials. This never blocks or undoes the download above — the
       // technician already has their PDF either way.
-      if (window.JobCardBackend && window.JobCardBackend.isConfigured()) {
+      if(window.JobCardBackend && window.JobCardBackend.isConfigured()){
         try {
           await window.JobCardBackend.submit({
             jobNo: jobNo, jobDate: jobDate, technician: technician,
@@ -495,7 +610,7 @@ window.addEventListener('unhandledrejection', function(ev){
             signatureDataUrl: signatureDataUrl, signatoryName: signatoryName
           }, pdfBlob);
           setStatus('PDF saved, and synced to the office system.', 'ok');
-        } catch (syncErr) {
+        } catch(syncErr){
           console.error('Supabase sync failed:', syncErr);
           setStatus('PDF saved to this device, but could not sync to the office system — check your connection. Your downloaded PDF is safe either way.', 'error');
         }
